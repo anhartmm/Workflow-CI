@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  MLFLOW_TRACKING_URI: "https://dagshub.com/${{ secrets.DAGSHUB_USERNAME }}/Workflow_CI_Muhammad-Anhar-Tamim.mlflow"
+  MLFLOW_TRACKING_URI: "https://dagshub.com/${{ secrets.DAGSHUB_USERNAME }}/Workflow_CI_Muhammad-Anhar-Tamim"
   MLFLOW_TRACKING_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
   MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
 
@@ -29,6 +29,11 @@ jobs:
         pip install "mlflow===2.19.0" dagshub setuptools scikit-learn pandas matplotlib joblib
 
     - name: Run MLflow Project (Re-training Model)
+      env:
+        MLFLOW_TRACKING_URI: "https://dagshub.com/${{ secrets.DAGSHUB_USERNAME }}/Workflow_CI_Muhammad-Anhar-Tamim"
+        MLFLOW_TRACKING_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+        MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
+        DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
       run: |
         cd MLProject
         mlflow run . --env-manager local
