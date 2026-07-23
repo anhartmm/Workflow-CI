@@ -51,6 +51,7 @@ jobs:
         mlflow models build-docker \
           -m "runs:/$RUN_ID/model" \
           -n "tmmanhar/breast-cancer-model:latest" \
+          --base-image python:3.10-slim \
           --enable-mlserver
 
     - name: Push Docker Image to Docker Hub
