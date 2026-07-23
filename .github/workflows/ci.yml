@@ -29,12 +29,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install "mlflow==2.19.0" dagshub setuptools scikit-learn pandas matplotlib joblib
 
-    - name: Setup DagsHub Auth & Run MLflow Project
+    - name: Run Model Retraining
       run: |
-        python -c "import dagshub; dagshub.auth.add_app_token('${{ secrets.DAGSHUB_TOKEN }}')"
-        
         cd MLProject
-        mlflow run . --env-manager local
+        # Menjalankan script secara langsung setelah auth dagshub
+        python -c "import dagshub; dagshub.init('Workflow_CI_Muhammad-Anhar-Tamim', 'anhartamim36', mlflow=True)"
+        python modelling.py
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
