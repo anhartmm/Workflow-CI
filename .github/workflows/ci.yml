@@ -43,6 +43,8 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build Docker Image using MLflow
+      env:
+        MLFLOW_DOCKER_IMAGE_NAME: "python:3.10-slim"
       run: |
         RUN_ID=$(python -c "import mlflow; mlflow.set_tracking_uri('$MLFLOW_TRACKING_URI'); runs = mlflow.search_runs(experiment_names=['MSML_Breast_Cancer_Basic']); print(runs.iloc[0].run_id)")
         
@@ -51,7 +53,6 @@ jobs:
         mlflow models build-docker \
           -m "runs:/$RUN_ID/model" \
           -n "tmmanhar/breast-cancer-model:latest" \
-          --base-image python:3.10-slim \
           --enable-mlserver
 
     - name: Push Docker Image to Docker Hub
