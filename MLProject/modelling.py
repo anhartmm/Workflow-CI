@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+import dagshub
 import mlflow
 import mlflow.sklearn
 import pandas as pd
@@ -12,7 +13,7 @@ from sklearn.model_selection import train_test_split
 
 
 BASE_DIR = Path(__file__).resolve().parent
-TRACKING_URI = "http://127.0.0.1:5000"
+dagshub.init(repo_owner='anhartamim36', repo_name='Workflow_CI_Muhammad-Anhar-Tamim', mlflow=True)
 EXPERIMENT_NAME = "MSML_Breast_Cancer_Basic"
 
 
@@ -30,7 +31,6 @@ def load_dataset() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def main() -> None:
-    mlflow.set_tracking_uri(TRACKING_URI)
     mlflow.set_experiment(EXPERIMENT_NAME)
     in_project_run = bool(os.environ.get("MLFLOW_RUN_ID") or os.environ.get("MLFLOW_PARENT_RUN_ID"))
     run_id = os.environ.get("MLFLOW_RUN_ID") if in_project_run else None
