@@ -6,9 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-  MLFLOW_TRACKING_URI: "https://dagshub.com/anhartamim36/Workflow_CI_Muhammad-Anhar-Tamim"
+  MLFLOW_TRACKING_URI: "https://dagshub.com/anhartamim36/Workflow_CI_Muhammad-Anhar-Tamim.mlflow"
   MLFLOW_TRACKING_USERNAME: "anhartamim36"
   MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
+  DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
 jobs:
   train-and-build-docker:
@@ -26,15 +27,12 @@ jobs:
     - name: Install Base Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install "mlflow===2.19.0" dagshub setuptools scikit-learn pandas matplotlib joblib
+        pip install "mlflow==2.19.0" dagshub setuptools scikit-learn pandas matplotlib joblib
 
-    - name: Run MLflow Project (Re-training Model)
-      env:
-        MLFLOW_TRACKING_URI: "https://dagshub.com/anhartamim36/Workflow_CI_Muhammad-Anhar-Tamim"
-        MLFLOW_TRACKING_USERNAME: "anhartamim36"
-        MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
-        DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+    - name: Setup DagsHub Auth & Run MLflow Project
       run: |
+        python -c "import dagshub; dagshub.auth.add_app_token('${{ secrets.DAGSHUB_TOKEN }}')"
+        
         cd MLProject
         mlflow run . --env-manager local
 
