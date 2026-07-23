@@ -32,7 +32,6 @@ jobs:
     - name: Run Model Retraining
       run: |
         cd MLProject
-        # Menjalankan script secara langsung setelah auth dagshub
         python -c "import dagshub; dagshub.init('Workflow_CI_Muhammad-Anhar-Tamim', 'anhartamim36', mlflow=True)"
         python modelling.py
 
@@ -43,17 +42,13 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build Docker Image using MLflow
-      env:
-        MLFLOW_DOCKER_IMAGE_NAME: "python:3.10-slim"
       run: |
         RUN_ID=$(python -c "import mlflow; mlflow.set_tracking_uri('$MLFLOW_TRACKING_URI'); runs = mlflow.search_runs(experiment_names=['MSML_Breast_Cancer_Basic']); print(runs.iloc[0].run_id)")
-        
         echo "Building Docker Image for RUN_ID: $RUN_ID"
-        
-        mlflow models build-docker \
-          -m "runs:/$RUN_ID/model" \
-          -n "tmmanhar/breast-cancer-model:latest" \
-          --enable-mlserver
+        mlflow models generate-dockerfile -m "runs:/$RUN_ID/model" -d docker_output --enable-mlserver
+        sed -i 's|https://bootstrap.pypa.io/get-pip.py|https://bootstrap.pypa.io/pip/3.9/get-pip.py|g' docker_output/Dockerfile
+        cd docker_output
+        docker build -t tmmanhar/breast-cancer-model:latest .
 
     - name: Push Docker Image to Docker Hub
       run: |
